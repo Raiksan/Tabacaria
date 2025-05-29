@@ -2,7 +2,7 @@ package components;
 
 import java.util.Scanner;
 
-public class Paiero extends Produto {
+public class Paiero extends Produto implements Vendavel{
 
     public Paiero(String nome, double preco, int estoque, String descricao) {
         super(nome, preco, estoque, descricao);

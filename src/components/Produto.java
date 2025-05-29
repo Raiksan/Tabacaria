@@ -25,6 +25,14 @@ public abstract class Produto {
         return nome;
     }
 
+    public int getEstoque() {
+        return estoque;
+    }
+
+    public void setEstoque(int estoque) {
+        this.estoque = estoque;
+    }
+
     @Override
     public String toString() {
         return "Nome do produto: " + nome + " || Preço: R$" + preco + " || Estoque: " + estoque + " || Descrição: " + descricao;
