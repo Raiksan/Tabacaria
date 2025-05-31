@@ -1,7 +1,6 @@
 package utils;
 
 import components.*;
-
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -9,6 +8,8 @@ public class Menu {
 
     private ArrayList<Produto> produtos = new ArrayList<>();
     Scanner sc = new Scanner(System.in);
+    private double caixa;
+    private int vendasTotais;
 
     public void spawn() {
         letterSpawn();
@@ -19,6 +20,8 @@ public class Menu {
             System.out.println("2 - Listar produtos");
             System.out.println("3 - Venda de produtos");
             System.out.println("4 - Reposição de produtos");
+            System.out.println("5 - Exibir estatísticas da loja");
+            System.out.println("6 - Remover produto da loja");
             System.out.println("0 - Sair");
 
             op = sc.nextInt();
@@ -36,6 +39,12 @@ public class Menu {
                     break;
                 case 4:
                     reporEstoque();
+                    break;
+                case 5:
+                    exibirStats();
+                    break;
+                case 6:
+                    removerProdutos();
                     break;
                 case 0:
                     System.out.println("Encerrando o sistema...");
@@ -89,7 +98,6 @@ public class Menu {
             default->System.out.println("Opção invalida");
         }
 
-        produtos.add(novoProduto);
         System.out.println("Produto cadastrado com sucesso.");
     }
 
@@ -104,7 +112,6 @@ public class Menu {
             System.out.println(p);
         }
     }
-
 
     private void vendaDeProdutos() {
         if (produtos.isEmpty()) {
@@ -137,6 +144,8 @@ public class Menu {
 
             if (produtoSelecionado instanceof Vendavel) {
                 ((Vendavel) produtoSelecionado).vender(quantidade);
+                vendasTotais++;
+                caixa +=quantidade*produtoSelecionado.getPreco();
             } else {
                 System.out.println("Este produto não pode ser vendido.");
             }
@@ -173,4 +182,42 @@ public class Menu {
 
         produtoSelecionado.reporEstoque();
     }
+
+    private void exibirStats(){
+        System.out.format("Foram realizadas %d vendas\nTotal de valor liquido:%f",vendasTotais,caixa);
+    }
+
+    private void removerProdutos(){
+        if (produtos.isEmpty()) {
+            System.out.println("Nenhum produto foi cadastrado, logo, não pode ser removido.");
+            return;
+        }
+        listarProdutos();
+        System.out.print("Digite o nome do produto que deseja remover: ");
+        String nomeBusca = sc.nextLine();
+        Produto produtoSelecionado = null;
+        for (Produto p : produtos) {
+            if (p.getNome().equalsIgnoreCase(nomeBusca)) {
+                produtoSelecionado = p;
+                break;
+            }
+        }
+        if (produtoSelecionado == null) {
+            System.out.println("Produto não encontrado.");
+            return;
+        }
+        System.out.print("Você tem certeza que deseja remover esse produto?:");
+        String rep = sc.nextLine();
+        try{
+            if(rep.equalsIgnoreCase("sim")){
+                produtos.remove(produtoSelecionado);
+            } else{
+                return;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 }
