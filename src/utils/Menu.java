@@ -73,15 +73,20 @@ public class Menu {
 
         Produto novoProduto;
 
-        if (tipo == 1) {
-            novoProduto = new Cigarro(nome, preco, estoque, descricao);
-        } else if (tipo == 2) {
-            novoProduto = new Marijuana(nome, preco, estoque, descricao);
-        } else if (tipo == 3) {
-            novoProduto = new Paiero(nome, preco, estoque, descricao);
-        } else {
-            System.out.println("Tipo inválido.");
-            return;
+        switch (tipo){
+            case 1->{
+                novoProduto=new Cigarro(nome,preco, estoque, descricao);
+                produtos.add(novoProduto);
+            }
+            case 2->{
+                novoProduto=new Marijuana(nome,preco, estoque, descricao);
+                produtos.add(novoProduto);
+            }
+            case 3->{
+                novoProduto=new Paiero(nome,preco, estoque, descricao);
+                produtos.add(novoProduto);
+            }
+            default->System.out.println("Opção invalida");
         }
 
         produtos.add(novoProduto);
