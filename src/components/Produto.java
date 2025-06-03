@@ -1,40 +1,42 @@
 package components;
 
-public abstract class Produto {
+public abstract class Produto implements Vendavel {
+    // Encapsulamento estrito
+    private final String id;
+    private String nome;
+    private double preco;
+    private int estoque;
+    private String descricao;
 
-    protected String nome;
-    protected double preco;
-    protected int estoque;
-    protected String descricao;
-
-    public Produto(String nome, double preco, int estoque, String descricao) {
+    public Produto(String id, String nome, double preco, int estoque, String descricao) {
+        this.id = id;
         this.nome = nome;
         this.preco = preco;
         this.estoque = estoque;
         this.descricao = descricao;
     }
 
-    public abstract void reporEstoque();
-    public abstract void vender(int qnt);
+    public String getId() { return id; }
+    public String getNome() { return nome; }
+    public double getPreco() { return preco; }
+    public int getEstoque() { return estoque; }
+    public String getDescricao() { return descricao; }
 
-    public double getPreco() {
-        return preco;
-    }
+    // Setters protegidos, permitindo modificação só para subclasses
+    protected void setNome(String nome) { this.nome = nome; }
+    protected void setPreco(double preco) { this.preco = preco; }
+    protected void setEstoque(int estoque) { if (estoque >= 0) this.estoque = estoque; }
+    protected void setDescricao(String descricao) { this.descricao = descricao; }
 
-    public String getNome() {
-        return nome;
-    }
-
-    public int getEstoque() {
-        return estoque;
-    }
-
-    public void setEstoque(int estoque) {
-        this.estoque = estoque;
+    public void reporEstoque(int quantidade) {
+        if (quantidade > 0) {
+            this.estoque += quantidade;
+        }
     }
 
     @Override
     public String toString() {
-        return "Nome do produto: " + nome + " || Preço: R$" + preco + " || Estoque: " + estoque + " || Descrição: " + descricao;
+        return String.format("ID: %s | Nome: %-15s | Preço: R$%.2f | Estoque: %d | Descrição: %s",
+                id, nome, preco, estoque, descricao);
     }
 }

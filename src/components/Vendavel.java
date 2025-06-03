@@ -1,5 +1,5 @@
 package components;
 
 public interface Vendavel {
-    void vender(int quantidade);
+    void vender(int quantidade) throws EstoqueInsuficienteException;
 }

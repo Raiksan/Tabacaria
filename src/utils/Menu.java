@@ -1,17 +1,15 @@
 package utils;
 
 import components.*;
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Menu {
-
-    private ArrayList<Produto> produtos = new ArrayList<>();
-    Scanner sc = new Scanner(System.in);
+    private List<Produto> produtos = new ArrayList<>();
+    private Scanner sc = new Scanner(System.in);
     private double caixa;
     private int vendasTotais;
 
-    public void spawn() {
+    public void executar() {
         letterSpawn();
         int op;
         do {
@@ -28,50 +26,42 @@ public class Menu {
             sc.nextLine();
 
             switch (op) {
-                case 1:
-                    cadastroProdutos();
-                    break;
-                case 2:
-                    listarProdutos();
-                    break;
-                case 3:
-                    vendaDeProdutos();
-                    break;
-                case 4:
-                    reporEstoque();
-                    break;
-                case 5:
-                    exibirStats();
-                    break;
-                case 6:
-                    removerProdutos();
-                    break;
-                case 0:
-                    System.out.println("Encerrando o sistema...");
-                    break;
-                default:
-                    System.out.println("Opção inválida.");
+                case 1 -> cadastrarProduto();
+                case 2 -> listarProdutos();
+                case 3 -> vendaDeProdutos();
+                case 4 -> reporEstoque();
+                case 5 -> exibirStats();
+                case 6 -> removerProdutos();
+                case 0 -> System.out.println("Encerrando o sistema...");
+                default -> System.out.println("Opção inválida.");
             }
         } while (op != 0);
     }
 
-    public void letterSpawn() {
+    private void letterSpawn() {
         System.out.println(".___. .                      .     .                   ");
         System.out.println("  | _.|_  _. _. _.._.* _.   _| _   |   . . _.* _.._  _ ");
         System.out.println("  |(_][_)(_](_.(_][  |(_]  (_](/,  |___(_|(_.|(_][ )(_)");
     }
 
-    private void cadastroProdutos() {
+    private String gerarID() {
+        return UUID.randomUUID().toString().substring(0, 8);
+    }
+
+    private void cadastrarProduto() {
         System.out.println("Selecione o tipo de produto:");
         System.out.println("1 - Cigarro | 2 - Marijuana | 3 - Paiero");
         int tipo = sc.nextInt();
         sc.nextLine();
+
+        String id = gerarID();
 
         System.out.print("Nome: ");
         String nome = sc.nextLine();
 
         System.out.print("Preço: ");
         double preco = sc.nextDouble();
+        sc.nextLine();
 
         System.out.print("Estoque: ");
         int estoque = sc.nextInt();
@@ -80,25 +70,33 @@ public class Menu {
         System.out.print("Descrição: ");
         String descricao = sc.nextLine();
 
-        Produto novoProduto;
+        Produto novoProduto = null;
 
-        switch (tipo){
-            case 1->{
-                novoProduto=new Cigarro(nome,preco, estoque, descricao);
-                produtos.add(novoProduto);
+        switch (tipo) {
+            case 1 -> {
+                System.out.print("Sabor do cigarro: ");
+                String sabor = sc.nextLine();
+                novoProduto = new Cigarro(id, nome, preco, estoque, descricao, sabor);
             }
-            case 2->{
-                novoProduto=new Marijuana(nome,preco, estoque, descricao);
-                produtos.add(novoProduto);
+            case 2 -> {
+                System.out.print("Teor de THC (%): ");
+                double teor = sc.nextDouble();
+                sc.nextLine();
+                novoProduto = new Marijuana(id, nome, preco, estoque, descricao, teor);
             }
-            case 3->{
-                novoProduto=new Paiero(nome,preco, estoque, descricao);
-                produtos.add(novoProduto);
+            case 3 -> {
+                System.out.print("É artesanal? (sim/não): ");
+                String resp = sc.nextLine();
+                boolean artesanal = resp.equalsIgnoreCase("sim");
+                novoProduto = new Paiero(id, nome, preco, estoque, descricao, artesanal);
             }
-            default->System.out.println("Opção invalida");
+            default -> System.out.println("Opção inválida.");
         }
 
-        System.out.println("Produto cadastrado com sucesso.");
+        if (novoProduto != null) {
+            produtos.add(novoProduto);
+            System.out.println("Produto cadastrado com sucesso.");
+        }
     }
 
     private void listarProdutos() {
@@ -106,52 +104,58 @@ public class Menu {
             System.out.println("Nenhum produto cadastrado.");
             return;
         }
-
         System.out.println("\n--- Lista de Produtos ---");
+        produtos.forEach(System.out::println);
+    }
+
+    private Produto buscarProdutoPorNome() {
+        System.out.print("Digite o nome do produto: ");
+        String nomeBusca = sc.nextLine();
         for (Produto p : produtos) {
-            System.out.println(p);
+            if (p.getNome().equalsIgnoreCase(nomeBusca.trim())) {
+                return p;
+            }
         }
+        return null;
     }
 
     private void vendaDeProdutos() {
         if (produtos.isEmpty()) {
-            System.out.println("Nenhum produto foi cadastrado, logo, não pode ser comprado.");
+            System.out.println("Nenhum produto cadastrado.");
             return;
         }
 
         listarProdutos();
 
-        System.out.print("Digite o nome do produto que deseja comprar: ");
-        String nomeBusca = sc.nextLine();
-
-        Produto produtoSelecionado = null;
-
-        for (Produto p : produtos) {
-            if (p.getNome().equalsIgnoreCase(nomeBusca)) {
-                produtoSelecionado = p;
-                break;
-            }
-        }
-
-        if (produtoSelecionado == null) {
+        Produto produto = buscarProdutoPorNome();
+        if (produto == null) {
             System.out.println("Produto não encontrado.");
             return;
         }
 
-        System.out.print("Digite a quantidade que deseja comprar: ");
-        try {
-            int quantidade = Integer.parseInt(sc.nextLine());
-
-            if (produtoSelecionado instanceof Vendavel) {
-                ((Vendavel) produtoSelecionado).vender(quantidade);
-                vendasTotais++;
-                caixa +=quantidade*produtoSelecionado.getPreco();
-            } else {
-                System.out.println("Este produto não pode ser vendido.");
+        // Checa restrição de idade, se aplicável
+        if (produto instanceof RestringivelPorIdade restrito) {
+            System.out.println("ATENÇÃO: " + restrito.getMensagemRestricao());
+            System.out.print("O cliente é maior de " + restrito.getIdadeMinimaRequerida() + " anos? (sim/não): ");
+            String confirmacaoIdade = sc.nextLine().trim();
+            if (!"sim".equalsIgnoreCase(confirmacaoIdade)) {
+                System.out.println("Venda cancelada. O cliente não atende ao requisito de idade.");
+                return;
             }
+        }
 
+        System.out.print("Digite a quantidade que deseja comprar: ");
+        int quantidade;
+        try {
+            quantidade = Integer.parseInt(sc.nextLine());
+            produto.vender(quantidade);
+            vendasTotais++;
+            caixa += quantidade * produto.getPreco();
+            System.out.println("Venda realizada com sucesso!");
         } catch (NumberFormatException e) {
             System.out.println("Quantidade inválida. Venda cancelada.");
+        } catch (EstoqueInsuficienteException | IllegalArgumentException e) {
+            System.out.println("Erro na venda: " + e.getMessage());
         }
     }
 
@@ -163,61 +167,48 @@ public class Menu {
 
         listarProdutos();
 
-        System.out.print("Digite o nome do produto para repor estoque: ");
-        String nomeBusca = sc.nextLine();
-
-        Produto produtoSelecionado = null;
-
-        for (Produto p : produtos) {
-            if (p.getNome().equalsIgnoreCase(nomeBusca)) {
-                produtoSelecionado = p;
-                break;
-            }
-        }
-
-        if (produtoSelecionado == null) {
+        Produto produto = buscarProdutoPorNome();
+        if (produto == null) {
             System.out.println("Produto não encontrado.");
             return;
         }
 
-        produtoSelecionado.reporEstoque();
+        System.out.print("Digite a quantidade para repor: ");
+        int quantidade;
+        try {
+            quantidade = Integer.parseInt(sc.nextLine());
+            produto.reporEstoque(quantidade);
+            System.out.println("Estoque atualizado.");
+        } catch (NumberFormatException e) {
+            System.out.println("Quantidade inválida.");
+        }
     }
 
-    private void exibirStats(){
-        System.out.format("Foram realizadas %d vendas\nTotal de valor liquido:%f",vendasTotais,caixa);
+    private void exibirStats() {
+        System.out.printf("Foram realizadas %d vendas\nTotal de valor líquido: R$ %.2f\n", vendasTotais, caixa);
     }
 
-    private void removerProdutos(){
+    private void removerProdutos() {
         if (produtos.isEmpty()) {
-            System.out.println("Nenhum produto foi cadastrado, logo, não pode ser removido.");
+            System.out.println("Nenhum produto cadastrado.");
             return;
         }
         listarProdutos();
-        System.out.print("Digite o nome do produto que deseja remover: ");
-        String nomeBusca = sc.nextLine();
-        Produto produtoSelecionado = null;
-        for (Produto p : produtos) {
-            if (p.getNome().equalsIgnoreCase(nomeBusca)) {
-                produtoSelecionado = p;
-                break;
-            }
-        }
-        if (produtoSelecionado == null) {
+
+        Produto produto = buscarProdutoPorNome();
+        if (produto == null) {
             System.out.println("Produto não encontrado.");
             return;
         }
-        System.out.print("Você tem certeza que deseja remover esse produto?:");
-        String rep = sc.nextLine();
-        try{
-            if(rep.equalsIgnoreCase("sim")){
-                produtos.remove(produtoSelecionado);
-            } else{
-                return;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+        System.out.print("Tem certeza que deseja remover? (sim/não): ");
+        String resposta = sc.nextLine();
+
+        if (resposta.equalsIgnoreCase("sim")) {
+            produtos.remove(produto);
+            System.out.println("Produto removido com sucesso.");
+        } else {
+            System.out.println("Remoção cancelada.");
         }
-
     }
-
 }
