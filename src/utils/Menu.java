@@ -20,6 +20,7 @@ public class Menu {
             System.out.println("4 - Reposição de produtos");
             System.out.println("5 - Exibir estatísticas da loja");
             System.out.println("6 - Remover produto da loja");
+            System.out.println("7 - Cupons disponíveis");
             System.out.println("0 - Sair");
 
             op = sc.nextInt();
@@ -32,6 +33,7 @@ public class Menu {
                 case 4 -> reporEstoque();
                 case 5 -> exibirStats();
                 case 6 -> removerProdutos();
+                case 7 -> exibirCupons();
                 case 0 -> System.out.println("Encerrando o sistema...");
                 default -> System.out.println("Opção inválida.");
             }
@@ -119,6 +121,16 @@ public class Menu {
         return null;
     }
 
+    private void exibirCupons() {
+        System.out.println("--- Cupons Disponíveis ---");
+        for (Cupom c : Cupom.values()) {
+            if (c != Cupom.NENHUM) {
+                System.out.printf("Nome: %s\nMensagem: %s\n\n", c.name(), c.getMensagem());
+            }
+        }
+    }
+
+
     private void vendaDeProdutos() {
         if (produtos.isEmpty()) {
             System.out.println("Nenhum produto cadastrado.");
@@ -148,9 +160,24 @@ public class Menu {
         int quantidade;
         try {
             quantidade = Integer.parseInt(sc.nextLine());
+            double valorBruto = quantidade * produto.getPreco();
+
+            // Perguntar sobre cupom
+            System.out.print("Deseja aplicar um cupom? (Digite o nome do cupom ou pressione Enter para nenhum): ");
+            String nomeCupom = sc.nextLine();
+            Cupom cupom = Cupom.obterPorNome(nomeCupom);
+
+            double valorFinal = cupom.aplicar(valorBruto);
+
+            // Mostrar mensagem do cupom, se aplicável
+            if (cupom != Cupom.NENHUM) {
+                System.out.println(cupom.getMensagem());
+            }
+
             produto.vender(quantidade);
             vendasTotais++;
-            caixa += quantidade * produto.getPreco();
+            caixa += valorFinal;
+            System.out.printf("Total a pagar: R$ %.2f\n", valorFinal);
             System.out.println("Venda realizada com sucesso!");
         } catch (NumberFormatException e) {
             System.out.println("Quantidade inválida. Venda cancelada.");
@@ -159,7 +186,7 @@ public class Menu {
         }
     }
 
-    private void reporEstoque() {
+        private void reporEstoque() {
         if (produtos.isEmpty()) {
             System.out.println("Nenhum produto cadastrado.");
             return;
