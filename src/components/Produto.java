@@ -1,6 +1,6 @@
 package components;
 
-public abstract class Produto implements Vendavel {
+public abstract class Produto {
     // Encapsulamento estrito
     private final String id;
     private String nome;
@@ -33,7 +33,7 @@ public abstract class Produto implements Vendavel {
             this.estoque += quantidade;
         }
     }
-
+    public abstract void vender(int quantidade) throws EstoqueInsuficienteException;
     @Override
     public String toString() {
         return String.format("ID: %s | Nome: %-15s | Preço: R$%.2f | Estoque: %d | Descrição: %s",

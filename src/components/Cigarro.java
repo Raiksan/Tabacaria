@@ -1,6 +1,7 @@
 package components;
 
 public class Cigarro extends Produto implements RestringivelPorIdade {
+
     private String sabor;
     private static final int IDADE_MINIMA = 18;
 

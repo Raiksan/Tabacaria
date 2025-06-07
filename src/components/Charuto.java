@@ -1,16 +1,17 @@
 package components;
 
-public class Marijuana extends Produto implements RestringivelPorIdade {
-    private double teorTHC;
+public class Charuto extends Produto implements RestringivelPorIdade {
+
+    private String aroma;
     private static final int IDADE_MINIMA = 21;
 
-    public Marijuana(String id, String nome, double preco, int estoque, String descricao, double teorTHC) {
+    public Charuto(String id, String nome, double preco, int estoque, String descricao, String aroma) {
         super(id, nome, preco, estoque, descricao);
-        this.teorTHC = teorTHC;
+        this.aroma = aroma;
     }
 
-    public double getTeorTHC() { return teorTHC; }
-    public void setTeorTHC(double teorTHC) { this.teorTHC = teorTHC; }
+    public String aroma() { return aroma; }
+    public void aroma(String aroma) { this.aroma = aroma; }
 
     @Override
     public void vender(int quantidade) throws EstoqueInsuficienteException {
@@ -33,6 +34,6 @@ public class Marijuana extends Produto implements RestringivelPorIdade {
 
     @Override
     public String toString() {
-        return super.toString() + String.format(" | Teor THC: %.2f%%", teorTHC);
+        return super.toString() + String.format(" | Aroma: %s", aroma);
     }
 }

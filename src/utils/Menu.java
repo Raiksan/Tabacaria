@@ -1,7 +1,10 @@
 package utils;
 
 import components.*;
-import java.util.*;
+import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class Menu {
     private List<Produto> produtos = new ArrayList<>();
@@ -52,7 +55,7 @@ public class Menu {
 
     private void cadastrarProduto() {
         System.out.println("Selecione o tipo de produto:");
-        System.out.println("1 - Cigarro | 2 - Marijuana | 3 - Paiero");
+        System.out.println("1 - Cigarro | 2 - Charuto | 3 - Paiero");
         int tipo = sc.nextInt();
         sc.nextLine();
 
@@ -81,10 +84,10 @@ public class Menu {
                 novoProduto = new Cigarro(id, nome, preco, estoque, descricao, sabor);
             }
             case 2 -> {
-                System.out.print("Teor de THC (%): ");
-                double teor = sc.nextDouble();
+                System.out.print("Aroma do charuto: ");
+                String aroma = sc.nextLine();
                 sc.nextLine();
-                novoProduto = new Marijuana(id, nome, preco, estoque, descricao, teor);
+                novoProduto = new Charuto(id, nome, preco, estoque, descricao, aroma);
             }
             case 3 -> {
                 System.out.print("É artesanal? (sim/não): ");
